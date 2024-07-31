@@ -1,9 +1,13 @@
-FROM golang:1.23rc2-alpine3.20
+FROM golang:alpine AS builder
 
 WORKDIR /usr/local/go/src/app
 
 COPY . .
 
-RUN go mod init index
+RUN go mod init app && \
+    go build -o /index
 
-ENTRYPOINT [ "go", "run", "." ]
+FROM scratch
+COPY --from=builder /index /index
+
+ENTRYPOINT ["/index"]
